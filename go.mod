@@ -1,4 +1,4 @@
-module github.com/MouradHM/mongo-transfert
+module github.com/mouradhm/mongo-transfert
 
 go 1.24.2
 

@@ -2,12 +2,13 @@ package models
 
 // TransferParams contains the parameters needed for MongoDB collection transfer
 type TransferParams struct {
-	SourceURI      string   `json:"sourceUri"`
-	DestinationURI string   `json:"destinationUri"`
-	SourceDB       string   `json:"sourceDb"`
-	DestinationDB  string   `json:"destinationDb"`
-	Collections    []string `json:"collections"`
-	BatchSize      int      `json:"batchSize,omitempty"`
+	SourceURI            string   `json:"sourceUri"`
+	DestinationURI       string   `json:"destinationUri"`
+	SourceDB             string   `json:"sourceDb"`
+	DestinationDB        string   `json:"destinationDb"`
+	Collections          []string `json:"collections"`
+	BatchSize            int      `json:"batchSize,omitempty"`
+	OverwriteDestination bool     `json:"overwriteDestination,omitempty"` // If true, overwrites existing collections in destination
 }
 
 // CollectionTransferResult contains the result of a single collection transfer

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MouradHM/mongo-transfert/pkg/models"
+	"github.com/mouradhm/mongo-transfert/pkg/models"
 )
 
 // ValidateConnections validates the MongoDB connections
@@ -116,6 +116,7 @@ func TransferCollection(ctx context.Context, params models.TransferParams, colle
 		params.DestinationDB,
 		collectionName,
 		params.BatchSize,
+		params.OverwriteDestination,
 	)
 
 	if err != nil {

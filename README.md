@@ -5,6 +5,8 @@ A simple command-line tool for transferring collections between MongoDB database
 ## Features
 
 - Transfer all collections or a specified subset from one MongoDB database to another
+- Preserve all collection indexes during transfer (including unique constraints, TTL indexes, etc.)
+- Safe by default: won't overwrite existing collections unless explicitly requested
 - Parallel processing of collections for faster transfers
 - Configurable batch size for optimized performance
 - Detailed transfer summary with success/failure status
@@ -20,7 +22,7 @@ A simple command-line tool for transferring collections between MongoDB database
 
 ```bash
 # Clone the repository
-git clone git@github.com:MouradHM/mongo-transfert.git
+git clone git@github.com:mouradhm/mongo-transfert.git
 cd mongotransfert
 
 # Build the binary
@@ -51,6 +53,7 @@ go build -o mongotransfert ./cmd/mongotransfert
 | `--collections` | Comma-separated list of collections to transfer | All collections | No |
 | `--batch-size` | Number of documents to transfer in a batch | 100 | No |
 | `--workers` | Number of parallel workers for collection transfer | 3 | No |
+| `--overwrite` | Overwrite existing collections in destination | false | No |
 
 ## Examples
 
@@ -64,7 +67,7 @@ go build -o mongotransfert ./cmd/mongotransfert
   --dest-db "destdb"
 ```
 
-### Transfer specific collections
+### Transfer specific collections with overwrite
 
 ```bash
 ./mongotransfert \
@@ -72,7 +75,8 @@ go build -o mongotransfert ./cmd/mongotransfert
   --dest "mongodb://localhost:27017" \
   --source-db "sourcedb" \
   --dest-db "destdb" \
-  --collections "users,orders,products"
+  --collections "users,orders,products" \
+  --overwrite
 ```
 
 ### Optimize transfer with more workers and larger batch size
@@ -84,7 +88,8 @@ go build -o mongotransfert ./cmd/mongotransfert
   --source-db "sourcedb" \
   --dest-db "destdb" \
   --batch-size 500 \
-  --workers 8
+  --workers 8 \
+  --overwrite
 ```
 
 ## How It Works
@@ -93,7 +98,11 @@ go build -o mongotransfert ./cmd/mongotransfert
 2. It retrieves the list of collections to be transferred (either all or specified ones)
 3. Multiple worker goroutines process the collections in parallel
 4. For each collection, the tool:
-   - Creates an index for efficient writes in the destination collection
+   - Checks if the collection exists in the destination
+   - If it exists and --overwrite is not set, skips the collection with an error
+   - If it exists and --overwrite is set, drops the existing collection
+   - Retrieves all indexes from the source collection
+   - Creates identical indexes on the destination collection (preserving unique constraints, TTL settings, etc.)
    - Transfers documents in batches to optimize performance
    - Reports progress and results
 5. A summary is displayed after all collections are processed

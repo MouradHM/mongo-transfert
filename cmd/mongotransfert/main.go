@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/MouradHM/mongo-transfert/pkg/activities"
-	"github.com/MouradHM/mongo-transfert/pkg/models"
+	"github.com/mouradhm/mongo-transfert/pkg/activities"
+	"github.com/mouradhm/mongo-transfert/pkg/models"
 )
 
 func main() {
@@ -22,6 +22,7 @@ func main() {
 	collections := flag.String("collections", "", "Comma-separated list of collections to transfer (optional, default: all)")
 	batchSize := flag.Int("batch-size", 100, "Number of documents to transfer in a batch")
 	workerCount := flag.Int("workers", 3, "Number of parallel workers for collection transfer")
+	overwrite := flag.Bool("overwrite", false, "Overwrite existing collections in destination (default: false)")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -36,11 +37,12 @@ func main() {
 
 	// Create transfer parameters
 	params := models.TransferParams{
-		SourceURI:      *sourceURI,
-		DestinationURI: *destURI,
-		SourceDB:       *sourceDB,
-		DestinationDB:  *destDB,
-		BatchSize:      *batchSize,
+		SourceURI:            *sourceURI,
+		DestinationURI:       *destURI,
+		SourceDB:             *sourceDB,
+		DestinationDB:        *destDB,
+		BatchSize:            *batchSize,
+		OverwriteDestination: *overwrite,
 	}
 
 	// Parse collections if provided
